@@ -14,14 +14,6 @@ double inf = (double)(1<<15);
 double error = 0.0001;
 double mx=0, mx2=0;
 
-double MIN(double a, double b){
-	return (a<b?a:b);
-}
-
-double MAX(double a, double b){
-        return (a<b?b:a);
-}
-
 dc3 bl(vector <mpiif> &ups, vector < mpiif > &ds, vector <pair <int, int > > &argmin, double eps, double A, double B){	
 	dc3 pos;
 	double HMU, HMD, ZP, D, U;
@@ -103,27 +95,11 @@ dc3 bl(vector <mpiif> &ups, vector < mpiif > &ds, vector <pair <int, int > > &ar
 					aux.pb({Zmn, Zmx});
 					hm[{a+tt->ff.ff-argmin[i].ff, b+tt->ff.ss-argmin[i].ss}] = aux;
 				}
-				mx = MAX(Zmx, mx);
+				mx = max(Zmx, mx);
 			}
 			pos.pb({(a-argmin[i].ff)*eps, (b-argmin[i].ss)*eps, z});
 		}
-		/*for (auto t=hm.begin();t!=hm.end();t++){
-                                        cout << (t->ff.ff)*eps << ' ' << (t->ff.ss)*eps << endl;
-                                        for (pair <double, double> e:t->ss){
-                                                cout << '\t' << e.ff+mx2 << ' ' << e.ss+mx2 << endl;
-                                        }
-                                }
-		cout << endl;*/
-		//for (auto tt=hm.begin();tt!=hm.end();tt++)cout << tt->ff.ff << ' ' << tt->ff.ss << ' ' << tt->ss.ff << ' ' << tt->ss.ss << endl;
-		//
 	}
-	/*for (auto t=hm.begin();t!=hm.end();t++){
-                                        //cout << t->ff.ff << ' ' << t->ff.ss << endl;
-                                        for (pair <double, double> e:t->ss){
-                                                if (e.ff-e.ss>=0)cout << '\t' << e.ff << ' ' << e.ss << endl;
-                                        }
-                          	}*/
-
 	return pos;
 }
 
