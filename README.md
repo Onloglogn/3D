@@ -2,7 +2,7 @@
 # I will add things in this repository as days go by in this week
 This is a repository for showing a heuristic based on Bottom Left Algorithm, for finding good solutions to pack any object. The Bottom left Algorithm puts rectangles of integer length of sides in a viable position. The position to be viable is determined by...
 ...
-Like the following image shows[
+Like the following image shows
 
 
 
