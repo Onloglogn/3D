@@ -55,38 +55,14 @@ cpdef list mxmn(list idxv):
 cpdef align(list idxv):
     cdef list l = mxmn(idxv)
     return translate(idxv, (-l[1], -l[3], -l[5]))
-cpdef list mxmnB(list idxv, list b):
-    cdef float xmn=N, xmx=-N
-    cdef float ymn=N, ymx=-N
-    cdef float zmn=N, zmx=-N
-    for v in idxv:
-        m = dott(v, b[0])
-        n = dott(v, b[1])
-        o = dott(v, b[2])
-        xmx = max(xmx, m)
-        xmn = min(xmn, m)
-        ymx = max(ymx, n)
-        ymn = min(ymn, n)
-        zmx = max(zmx, o)
-        zmn = min(zmn, o)
-    return [xmx, xmn, ymx, ymn, zmx, zmn]
-cpdef double D(list a, list b):
-    cdef float r=0
-    for i in range(len(a)):
-        r+=(a[i]-b[i])*(a[i]-b[i])
-    return r
-cpdef double __sum__(list l):
-    cdef double s=0
-    for i in range(len(l)):
-        s+=l[i]
-    return s
+
 cpdef tuple normal(list f):
     return cross(subt(f[2], f[0]), subt(f[1], f[0]))
 cpdef tuple matrixmul(tuple vertex, list m):
     return (dott(m[0], vertex), dott(m[1], vertex), dott(m[2], vertex))
 cpdef list matrixmulv(list idxv, list m):
     return [matrixmul(idxv[k], m) for k in range(len(idxv))]
-cpdef tuple R3(tuple vertex, tuple xyz):
+cpdef tuple R3(tuple vertex, tuple xyz):#something is wrong here idk what
     cdef double x= xyz[0]
     cdef double y= xyz[1]
     cdef double z= xyz[2]
@@ -129,75 +105,7 @@ cpdef double faceVol(list faces, list idxv):
     for f in faces:
         s+=det([idxv[f[0]], idxv[f[1]], idxv[f[2]]])
     return abs(s/6)
-cpdef list bar(list faces, list idxv):
-    return [divt(addt(idxv[f[0]], addt(idxv[f[1]], idxv[f[2]])), 3) for f in faces]
-cpdef tuple mean(list faces, list idxv):
-    cdef tuple mu= (0.0, 0.0, 0.0)
-    for u in range(0, len(faces)):
-        for v in range(3):
-            mu = addt(mu, idxv[faces[u][v]])
-    mu = divt(mu, 3*len(faces))
-    return mu
-cpdef tuple pcmean(list idxv):
-    cdef tuple mu = (0.0, 0.0, 0.0)
-    for i in range(len(idxv)):
-        mu = addt(mu, idxv[i])
-    return divt(mu, len(idxv))
-cpdef list covariance(list faces, list idxv):
-    cdef tuple mu= (0.0, 0.0, 0.0)
-    cdef list C = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-    cdef double a, b, c, d, e, f, g, h, i
-    for u in range(0, len(faces)):
-        for v in range(3):
-            mu = addt(mu, idxv[faces[u][v]])
-    mu = divt(mu, 3*len(faces))
-    for u in range(0, len(faces)):
-        a = idxv[faces[u][0]][0]-mu[0]#
-        b = idxv[faces[u][0]][1]-mu[1]
-        c = idxv[faces[u][0]][2]-mu[2]
-        d = idxv[faces[u][1]][0]-mu[0]#
-        e = idxv[faces[u][1]][1]-mu[1]
-        f = idxv[faces[u][1]][2]-mu[2]
-        g = idxv[faces[u][2]][0]-mu[0]#
-        h = idxv[faces[u][2]][1]-mu[1]
-        i = idxv[faces[u][2]][2]-mu[2]
-        C[0][0]+=a*a+d*d+g*g
-        C[1][1]+=b*b+e*e+h*h
-        C[2][2]+=c*c+f*f+i*i
-        C[0][1]+=a*b+d*e+g*h
-        C[0][2]+=a*c+d*f+g*i
-        C[1][2]+=b*c+e*f+h*i
-    for u in range(3):
-        for v in range(3):
-            C[u][v] = C[u][v]/(3*len(faces))
-    C[1][0]=C[0][1]
-    C[2][0]=C[0][2]
-    C[2][1]=C[1][2]
-    return [mu, C]
-cpdef list pccovariance(list idxv):
-    cdef tuple mu = pcmean(idxv)
-    cdef list C = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
-    cdef double a, b, c
-    for u in range(len(idxv)):
-        a = idxv[u][0]
-        b = idxv[u][1]
-        c = idxv[u][2]
-        C[0][0]+=a*a
-        C[1][1]+=b*b
-        C[2][2]+=c*c
-        C[0][1]+=a*b
-        C[0][2]+=a*c
-        C[1][2]+=b*c
-    for u in range(3):
-        for v in range(3):
-            C[u][v] = C[u][v]/(len(idxv))
-    C[1][0]=C[0][1]
-    C[2][0]=C[0][2]
-    C[2][1]=C[1][2]
-    return [mu, C]
-cpdef list BBS(vertex, c, n, h):#bounding box search
-    cdef list vc = [subt(vertex[i], c) for i in range(len(vertex))]
-    return [vertex[i] for i in range(len(vc)) if abs(dott(vc[i], n[0]))<h[0] and abs(dott(vc[i], n[1]))<h[1] and abs(dott(vc[i], n[2]))<h[2]]
+
 cpdef int inside_tetra(p, t):
     cdef tuple n1= cross(sub(t[2],t[0]), sub(t[1],t[0]))
     cdef tuple n2= cross(sub(t[1],t[0]), sub(t[3],t[0]))
@@ -227,15 +135,3 @@ cpdef list circumsphere(list t):
     cdef double a = -u+v-w+x
     cdef double c = n[0]*u-n[1]*v+n[2]*w-n[3]*x
     return [divt((dx, dy, dz), 2*a), abs(sqrt(dx*dx+dy*dy+dz*dz-4*a*c)/(2*a))]
-cpdef list BBT(list idxv, int D):
-    cdef list tr = [0]
-    cdef list vn = [[idxv[i], 1] for i in range(len(idxv))]
-    cdef int n=1
-    cdef list l
-    
-    for i in range(D):
-        for j in range(1<<i):
-            l = mxmn([e[0] for e in vn if e[1]==n])
-            tr.append([[((l[0]+l[1])/2, (l[2]+l[3])/2, )]])
-            n+=1
-    return []
